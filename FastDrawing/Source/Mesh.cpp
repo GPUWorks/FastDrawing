@@ -86,6 +86,17 @@ void Mesh::Bind() {
 
 }
 
+
+void Mesh::DrawSolidColor(Color color)
+{
+	glUseProgram(this->program);
+	//uniforms
+	int colorUniformLocation = glGetUniformLocation(this->program, "ourColor");
+	glUniform4f(colorUniformLocation, color.r, color.g, color.b, color.a);
+
+	glBindVertexArray(this->VAO);
+	glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() * 3);
+}
 void Mesh::Draw() {
 
 	glUseProgram(this->program);
