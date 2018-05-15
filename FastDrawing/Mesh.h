@@ -4,10 +4,12 @@
 #include "include/glad/glad.h"
 //#include <GLFW/glfw3.h>
 
+
+#define LAYOUT_POSITION 0
+
 typedef struct {
 	float x, y, z;
 }Vertex;
-
 
 
 
@@ -22,10 +24,8 @@ public:
 	void Draw();
 
 private:
-	//used to automatic assign vertex buffer
-	static GLuint vertexBufferCounter;
 
-	GLuint vertexBuffer, vertexArray, vertexShaderID, fragmentShaderID, program;
+	GLuint VBO, VAO, program;
 	GLint mvpLocation, vPosLocation, vColLocation;
 
 	std::string vertexShaderText;

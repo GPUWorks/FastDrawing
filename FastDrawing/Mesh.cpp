@@ -1,5 +1,6 @@
 #include "Mesh.h"
 
+
 Mesh::Mesh(std::string vertexShaderText, std::string fragmentShaderText)
 {
 	this->vertexShaderText = vertexShaderText;
@@ -7,16 +8,16 @@ Mesh::Mesh(std::string vertexShaderText, std::string fragmentShaderText)
 
 
 	//creating vertex shader
-	this->vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	//assign text to vertex shader
 	const char* vertexText = this->vertexShaderText.c_str();
-	glShaderSource(this->vertexShaderID, 1, &vertexText, nullptr);
+	glShaderSource(vertexShaderID, 1, &vertexText, nullptr);
 	//compiling vertex shader
-	glCompileShader(this->vertexShaderID);
+	glCompileShader(vertexShaderID);
 
 	//check vertex shader compilation
 	GLint isVertexCompiled;
-	glGetShaderiv(this->vertexShaderID, GL_COMPILE_STATUS, &isVertexCompiled);
+	glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &isVertexCompiled);
 	if (isVertexCompiled == GL_FALSE)
 	{
 		//compilation failed
@@ -26,16 +27,16 @@ Mesh::Mesh(std::string vertexShaderText, std::string fragmentShaderText)
 
 
 	//creating fragment shader
-	this->fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 	//assign text to fragment shader
 	const char* fragmentText = this->fragmentShaderText.c_str();
-	glShaderSource(this->fragmentShaderID, 1, &fragmentText, nullptr);
+	glShaderSource(fragmentShaderID, 1, &fragmentText, nullptr);
 	//compiling fragment shader
-	glCompileShader(this->fragmentShaderID);
+	glCompileShader(fragmentShaderID);
 
 	//check fragment shader compilation
 	GLint isFragmentCompiled;
-	glGetShaderiv(this->fragmentShaderID, GL_COMPILE_STATUS, &isFragmentCompiled);
+	glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &isFragmentCompiled);
 	if (isFragmentCompiled == GL_FALSE)
 	{
 		//compilation failed
@@ -45,9 +46,14 @@ Mesh::Mesh(std::string vertexShaderText, std::string fragmentShaderText)
 
 	//create program with shaders
 	this->program = glCreateProgram();
-	glAttachShader(this->program, this->vertexShaderID);
-	glAttachShader(this->program, this->fragmentShaderID);
+	glAttachShader(this->program, vertexShaderID);
+	glAttachShader(this->program, fragmentShaderID);
 	glLinkProgram(this->program);
+	
+	//free shaders
+	glDeleteShader(vertexShaderID);
+	glDeleteShader(fragmentShaderID);
+
 
 }
 
@@ -63,23 +69,27 @@ void Mesh::SetVertices(std::vector<Vertex> vertices) {
 
 void Mesh::Bind() {
 
-	glGenBuffers(1, &this->vertexBuffer);
+	glGenBuffers(1, &this->VBO);
 	
-	glGenVertexArrays(1, &this->vertexArray);
-	glBindVertexArray(this->vertexArray);
+	glGenVertexArrays(1, &this->VAO);
+	glBindVertexArray(this->VAO);
 	
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) *3 *this->vertices.size(), &this->vertices[0], GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(float) *3, &this->vertices[0], GL_STATIC_DRAW);
 	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-	glEnableVertexAttribArray(0);
+	//first: layout position
+	//second: size of vertex attributes (3 points)
+	//third: what type is vertex
+	//fourth: be normalized?
+	glVertexAttribPointer(LAYOUT_POSITION, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(LAYOUT_POSITION);
 
 }
 
 void Mesh::Draw() {
 
 	glUseProgram(this->program);
-	glBindVertexArray(this->vertexArray);
+	glBindVertexArray(this->VAO);
 	glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() * 3);
 }
 
