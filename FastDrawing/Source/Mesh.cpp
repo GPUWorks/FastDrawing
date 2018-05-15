@@ -1,4 +1,4 @@
-#include "Mesh.h"
+#include "../include/Mesh.h"
 
 
 Mesh::Mesh(std::string vertexShaderText, std::string fragmentShaderText)
@@ -89,6 +89,10 @@ void Mesh::Bind() {
 void Mesh::Draw() {
 
 	glUseProgram(this->program);
+	//uniforms
+	int colorUniformLocation = glGetUniformLocation(this->program, "ourColor");
+	glUniform4f(colorUniformLocation, 1, 1, 0, 1);
+
 	glBindVertexArray(this->VAO);
 	glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() * 3);
 }

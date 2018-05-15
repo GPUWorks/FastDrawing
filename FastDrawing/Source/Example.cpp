@@ -10,13 +10,13 @@ int main(int argc, char* args[])
 
 
 	std::vector<Vertex> vertices;
-	Vertex v1 = { 0.0f, 0.5f, 0.0f, };
+	Vertex v1 = { -0.5f, -0.5f, 0.0f, };
 	Vertex v2 = { 0.5f, -0.5f, 0.0f, };
-	Vertex v3 = { -0.5f, -0.5f, 0.0f };
+	Vertex v3 = { 0.5f, 0.5f, 0.0f };
 
-	Vertex v4 = { 0.0f, -0.5f, 0.0f, };
-	Vertex v5 = { -0.5f, 0.5f, 0.0f, };
-	Vertex v6 = { 0.5f, 0.5f, 0.0f };
+	Vertex v4 = { -0.5f, -0.5f, 0.0f, };
+	Vertex v5 = { 0.5f, 0.5f, 0.0f, };
+	Vertex v6 = { -0.5f, 0.5f, 0.0f };
 
 	vertices.push_back(v1);
 	vertices.push_back(v2);
@@ -35,15 +35,19 @@ int main(int argc, char* args[])
 
 	std::string fragment ="#version 330 core\n"
 		"out vec4 FragColor;\n"
+		"uniform vec4 ourColor;\n"
 		"void main()\n"
 		"{\n"
-		"FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+		"FragColor = ourColor;\n"
 		"}\n";
 
 	Mesh mesh = Mesh(vertex, fragment);
 	mesh.SetVertices(vertices);
 	mesh.Bind();
 
+	/*Mesh mesh2 = Mesh(vertex, fragment);
+	mesh2.SetVertices(vertices);
+	mesh2.Bind();*/
 
 	while (window.IsOpened()) {
 

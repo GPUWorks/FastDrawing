@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <iostream>
-#include "include/glad/glad.h"
+#include "glad/glad.h"
 //#include <GLFW/glfw3.h>
 
 
@@ -21,6 +21,8 @@ public:
 
 	void SetVertices(std::vector<Vertex> vertices);
 	void Bind();
+
+	//various drawing
 	void Draw();
 
 private:
