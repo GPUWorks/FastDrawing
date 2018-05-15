@@ -1,3 +1,5 @@
+#include <fstream>
+#include <sstream>
 #include "../include/Mesh.h"
 
 
@@ -55,6 +57,8 @@ Mesh::Mesh(std::string vertexShaderText, std::string fragmentShaderText)
 	glDeleteShader(fragmentShaderID);
 
 
+	
+
 }
 
 
@@ -75,27 +79,43 @@ void Mesh::Bind() {
 	glBindVertexArray(this->VAO);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(float) *3, &this->vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), &this->vertices[0], GL_STATIC_DRAW);
 	
 	//first: layout position
 	//second: size of vertex attributes (3 points)
 	//third: what type is vertex
 	//fourth: be normalized?
-	glVertexAttribPointer(LAYOUT_POSITION, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//5: stride
+	//6: offset
+	glVertexAttribPointer(LAYOUT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 	glEnableVertexAttribArray(LAYOUT_POSITION);
 
-}
+	glVertexAttribPointer(LAYOUT_UV, 2/*2 floats*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(LAYOUT_UV);
 
+}
 
 void Mesh::DrawSolidColor(Color color)
 {
 	glUseProgram(this->program);
 	//uniforms
 	int colorUniformLocation = glGetUniformLocation(this->program, "ourColor");
+	int usetextureUniformLocation = glGetUniformLocation(this->program, "useTexture");
+	glUniform1i(usetextureUniformLocation, 0);
 	glUniform4f(colorUniformLocation, color.r, color.g, color.b, color.a);
 
 	glBindVertexArray(this->VAO);
-	glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() * 3);
+	glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() );	//must be vertex n of elements
+}
+void Mesh::DrawTexture(Texture* texture)
+{
+	int usetextureUniformLocation = glGetUniformLocation(this->program, "useTexture");
+	int textureUniformLocation = glGetUniformLocation(this->program, "ourTexture");
+	glUniform1i(usetextureUniformLocation, 1);	//use texture
+	
+	glBindVertexArray(this->VAO);
+	glBindTexture(GL_TEXTURE_2D,texture->GetID());
+	glDrawElements(GL_TRIANGLES, this->vertices.size(), GL_UNSIGNED_INT, 0);	//must be vertex n of elements
 }
 void Mesh::Draw() {
 
@@ -105,6 +125,8 @@ void Mesh::Draw() {
 	glUniform4f(colorUniformLocation, 1, 1, 0, 1);
 
 	glBindVertexArray(this->VAO);
-	glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() * 3);
+	glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() * 5);
+
+	
 }
 

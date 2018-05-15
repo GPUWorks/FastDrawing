@@ -125,15 +125,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Color.h" />
     <ClInclude Include="include\Example.h" />
     <ClInclude Include="include\Mesh.h" />
+    <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\Window.h" />
+    <ClInclude Include="Shaders\Defaults\Default.txt" />
+    <ClInclude Include="include\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Example.cpp" />
     <ClCompile Include="Source\glad.c" />
     <ClCompile Include="Source\Mesh.cpp" />
+    <ClCompile Include="Source\StbImageImplementation.cpp" />
     <ClCompile Include="Source\Window.cpp" />
+    <ClCompile Include="Source\Texture.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
