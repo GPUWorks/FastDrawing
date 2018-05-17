@@ -1,6 +1,8 @@
 #include <fstream>
 #include <sstream>
+#include "../include/Gl_log.h"
 #include "../include/Mesh.h"
+
 
 
 Mesh::Mesh(std::string vertexShaderText, std::string fragmentShaderText)
@@ -66,17 +68,19 @@ Mesh::~Mesh()
 {
 }
 
-void Mesh::SetVertices(std::vector<Vertex> vertices) {
+void Mesh::SetVertices(std::vector<Vertex> vertices, std::vector<int> indices) {
 
 	this->vertices = vertices;
+	this->indices = indices;
 }
 
 void Mesh::Bind() {
 
-	glGenBuffers(1, &this->VBO);
-	
 	glGenVertexArrays(1, &this->VAO);
 	glBindVertexArray(this->VAO);
+	
+	glGenBuffers(1, &this->VBO);
+	glGenBuffers(1, &this->indexBuffer);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
 	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), &this->vertices[0], GL_STATIC_DRAW);
@@ -92,6 +96,9 @@ void Mesh::Bind() {
 
 	glVertexAttribPointer(LAYOUT_UV, 2/*2 floats*/, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(LAYOUT_UV);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(int), &this->indices[0], GL_STATIC_DRAW);
 
 }
 
@@ -109,13 +116,18 @@ void Mesh::DrawSolidColor(Color color)
 }
 void Mesh::DrawTexture(Texture* texture)
 {
+	glUseProgram(this->program);
 	int usetextureUniformLocation = glGetUniformLocation(this->program, "useTexture");
 	int textureUniformLocation = glGetUniformLocation(this->program, "ourTexture");
 	glUniform1i(usetextureUniformLocation, 1);	//use texture
 	
-	glBindVertexArray(this->VAO);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D,texture->GetID());
-	glDrawElements(GL_TRIANGLES, this->vertices.size(), GL_UNSIGNED_INT, 0);	//must be vertex n of elements
+	glBindVertexArray(this->VAO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER ,this->indexBuffer);
+	
+	(glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, nullptr));	//must be vertex n of elements
+
 }
 void Mesh::Draw() {
 
@@ -124,8 +136,8 @@ void Mesh::Draw() {
 	int colorUniformLocation = glGetUniformLocation(this->program, "ourColor");
 	glUniform4f(colorUniformLocation, 1, 1, 0, 1);
 
-	glBindVertexArray(this->VAO);
-	glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() * 5);
+	GL_CALL(glBindVertexArray(this->VAO));
+	GL_CALL(glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() * 5));
 
 	
 }

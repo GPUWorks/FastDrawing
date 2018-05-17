@@ -127,6 +127,7 @@
   <ItemGroup>
     <ClInclude Include="include\Color.h" />
     <ClInclude Include="include\Example.h" />
+    <ClInclude Include="include\Gl_log.h" />
     <ClInclude Include="include\Mesh.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\Window.h" />

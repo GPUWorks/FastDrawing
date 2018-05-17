@@ -15,7 +15,6 @@ typedef struct {
 }Vertex;
 
 
-
 class Mesh
 {
 public:
@@ -23,7 +22,7 @@ public:
 	//Mesh(std::string filePath);
 	~Mesh();
 
-	void SetVertices(std::vector<Vertex> vertices);
+	void SetVertices(std::vector<Vertex> vertices, std::vector<int> indices = std::vector<int>{ 0,1,3,1,2,3});	//default triangle
 	void Bind();
 
 	//various drawing
@@ -34,7 +33,7 @@ public:
 
 private:
 
-	GLuint VBO, VAO, program;
+	GLuint VBO, VAO, program, indexBuffer;
 	GLint mvpLocation, vPosLocation, vColLocation;
 
 	std::string vertexShaderText;
@@ -43,6 +42,7 @@ private:
 	size_t textureMode, textureWrapping;
 
 	std::vector<Vertex> vertices;
+	std::vector<int> indices;
 };
 
 //enum TEXTURE_MODE{TWO_D = GL_TEXTURE_2D};
