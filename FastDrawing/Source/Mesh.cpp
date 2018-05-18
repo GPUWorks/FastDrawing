@@ -138,13 +138,25 @@ void Mesh::DrawSolidColor(Color color)
 {
 	glUseProgram(this->program);
 	//uniforms
+	ApplyUniformTransformation();
+
 	int colorUniformLocation = glGetUniformLocation(this->program, "ourColor");
 	int usetextureUniformLocation = glGetUniformLocation(this->program, "useTexture");
 	glUniform1i(usetextureUniformLocation, 0);
 	glUniform4f(colorUniformLocation, color.r, color.g, color.b, color.a);
 
+	int tintUniformLocation = glGetUniformLocation(this->program, "tintColor");
+	if (this->useTint) {
+		glUniform4f(tintUniformLocation, COLOR_SPLIT_PTR(this->tintColor));
+	}
+	else {
+		glUniform4f(tintUniformLocation, 1, 1, 1, 1);
+	}
+
 	glBindVertexArray(this->VAO);
-	glDrawArrays(GL_TRIANGLES, 0, this->vertices.size());	//must be vertex n of elements
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexBuffer);
+	(glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, nullptr));	//must be vertex n of elements
+	//glDrawArrays(GL_TRIANGLES, 0, this->vertices.size());	//must be vertex n of elements
 }
 void Mesh::DrawTexture(Texture* texture)
 {
@@ -166,6 +178,45 @@ void Mesh::DrawTexture(Texture* texture)
 	glBindVertexArray(this->VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexBuffer);
 
+	ApplyUniformTransformation();
+
+	/*glm::mat4 pivotMat = glm::mat4(1.0f);
+	pivotMat = glm::translate(pivotMat, this->pivot);
+	int pivotLocation = glGetUniformLocation(this->program, "pivot");
+	glUniformMatrix4fv(pivotLocation, 1, GL_FALSE, glm::value_ptr(pivotMat));*/
+	
+
+	(glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, nullptr));	//must be vertex n of elements
+
+}
+void Mesh::Draw() {
+
+	glUseProgram(this->program);
+
+	ApplyUniformTransformation();
+
+	int usetextureUniformLocation = glGetUniformLocation(this->program, "useTexture");
+	//int textureUniformLocation = glGetUniformLocation(this->program, "ourTexture");
+	glUniform1i(usetextureUniformLocation, 0);	//do not use texture
+
+	int tintUniformLocation = glGetUniformLocation(this->program, "tintColor");
+	if (this->useTint) {
+		glUniform4f(tintUniformLocation, COLOR_SPLIT_PTR(this->tintColor));
+	}
+	else {
+		glUniform4f(tintUniformLocation, 1, 1, 1, 1);
+	}
+
+	int colorUniformLocation = glGetUniformLocation(this->program, "ourColor");
+	glUniform4f(colorUniformLocation, 1, 1, 0, 1);
+
+	GL_CALL(glBindVertexArray(this->VAO));
+	GL_CALL(glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() * 5));
+
+}
+
+void Mesh::ApplyUniformTransformation() {
+
 	glm::mat4 mat = Transform();
 	int matUniform = glGetUniformLocation(this->program, "transform");
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, glm::value_ptr(mat));
@@ -176,25 +227,9 @@ void Mesh::DrawTexture(Texture* texture)
 	int projLocation = glGetUniformLocation(this->program, "projection");
 	glUniformMatrix4fv(projLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
-	glm::mat4 view;
+	glm::mat4 view = glm::mat4(1.0f);
 	// note that we're translating the scene in the reverse direction of where we want to move
 	view = Window::current->currentCamera->GetViewMatrix();
 	int loc = glGetUniformLocation(this->program, "view");
 	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(view));
-
-	(glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, nullptr));	//must be vertex n of elements
-
 }
-void Mesh::Draw() {
-
-	glUseProgram(this->program);
-	//uniforms
-	int colorUniformLocation = glGetUniformLocation(this->program, "ourColor");
-	glUniform4f(colorUniformLocation, 1, 1, 0, 1);
-
-	GL_CALL(glBindVertexArray(this->VAO));
-	GL_CALL(glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() * 5));
-
-
-}
-

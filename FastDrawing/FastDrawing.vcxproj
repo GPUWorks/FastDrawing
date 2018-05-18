@@ -134,6 +134,7 @@
     <ClInclude Include="include\Window.h" />
     <ClInclude Include="Shaders\Defaults\Default.txt" />
     <ClInclude Include="include\Texture.h" />
+    <ClInclude Include="Sprite.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\Camera.cpp" />

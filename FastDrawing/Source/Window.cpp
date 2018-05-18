@@ -57,7 +57,8 @@ Window::~Window()
 }
 glm::mat4 Window::GetProjectionMatrix() 
 {
-	return glm::ortho(0.0f, (float)(this->width / this->height) * this->currentCamera->orthoSize, 0.0f, this->currentCamera->orthoSize, this->currentCamera->Znear, this->currentCamera->Zfar);
+	return glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, -0.1f, -100.0f);
+	//return glm::ortho(0.0f, (float)(this->width / this->height) * this->currentCamera->orthoSize, 0.0f, this->currentCamera->orthoSize, this->currentCamera->Znear, this->currentCamera->Zfar);
 }
 bool Window::IsOpened() {
 	return !glfwWindowShouldClose(this->window);

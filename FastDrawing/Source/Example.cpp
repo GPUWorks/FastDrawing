@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "../include/Sprite.h"
 #include "Window.h"
 
 
@@ -28,10 +29,11 @@ int main(int argc, char* args[])
 		"uniform mat4 transform;\n"
 		"uniform mat4 view;\n"
 		"uniform mat4 projection;\n"
+		//"uniform mat4 pivot;\n"
 		"out vec2 TexCoord;\n"
 		"void main()\n"
 		"{\n"
-		"gl_Position = projection * view * transform * vec4(aPos, 1.0f);\n"
+		"gl_Position = projection * view * transform * vec4(aPos.xy, 0.0f, 1.0f);\n"
 		"TexCoord = aTexCoord;\n"
 		"}\n";
 
@@ -52,9 +54,10 @@ int main(int argc, char* args[])
 	mesh.SetVertices(vertices);
 	mesh.Bind();
 	mesh.SetTintColor(BLUE);
-	mesh.position = glm::vec3(3, 1, 0);
+	/*mesh.pivot = glm::vec3(-0.5f, -1, 0);*/
+	mesh.position = glm::vec3(100, 100, 0);
 	mesh.rotation = glm::vec3(0, 0, 0);
-	mesh.scale += glm::vec3(1, 0, 0);
+	mesh.scale += glm::vec3(50, 50, 100);
 
 	Mesh mesh2 = Mesh(vertex, fragment);
 	mesh2.SetVertices(vertices);
@@ -65,13 +68,16 @@ int main(int argc, char* args[])
 
 
 	Texture tex = Texture("D:/UNITY/3 anno/FastDrawing/FastDrawing/Assets/mario.png");
-
+	Sprite sprite = Sprite(100, 50);
+	sprite.position = glm::vec3(150.0f, 150.0f, 0.0f);
 	while (window.IsOpened()) {
 
 		window.Clear();
 
-		mesh.DrawTexture(&tex);
-		mesh2.DrawTexture(&tex);
+		sprite.DrawSolidColor(RED);
+		//mesh.DrawSolidColor(RED);
+		//mesh.DrawTexture(&tex);
+		//mesh2.DrawTexture(&tex);
 
 		glfwPollEvents();
 		window.Blit();

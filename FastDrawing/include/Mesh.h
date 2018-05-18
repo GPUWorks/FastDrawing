@@ -38,11 +38,13 @@ public:
 	glm::vec3 position;
 	glm::vec3 rotation;
 	glm::vec3 scale;
+	glm::vec3 pivot;
 
 
 private:
 
 	glm::mat4 Transform();
+	void ApplyUniformTransformation();
 
 	GLuint VBO, VAO, program, indexBuffer;
 	GLint mvpLocation, vPosLocation, vColLocation;
