@@ -125,6 +125,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Color.h" />
     <ClInclude Include="include\Example.h" />
     <ClInclude Include="include\Gl_log.h" />
@@ -135,6 +136,7 @@
     <ClInclude Include="include\Texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\Camera.cpp" />
     <ClCompile Include="Source\Example.cpp" />
     <ClCompile Include="Source\glad.c" />
     <ClCompile Include="Source\Mesh.cpp" />

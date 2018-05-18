@@ -3,10 +3,13 @@
 
 
 
+Window* Window::current = nullptr;
 
 
 Window::Window(std::string title, int width, int height, int minorOpenGL, int majorOpenGL)
 {
+	Window::current = this;
+
 	this->title = title;
 	this->width = width;
 	this->height = height;
@@ -36,9 +39,12 @@ Window::Window(std::string title, int width, int height, int minorOpenGL, int ma
 	//load opengl
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	glfwSwapInterval(1);
+
+	glEnable(GL_BLEND);
+	glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+	glBlendFuncSeparate(GL_ONE, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 }
-
-
 Window::~Window()
 {
 
@@ -49,7 +55,10 @@ Window::~Window()
 
 	glfwTerminate();
 }
-
+glm::mat4 Window::GetProjectionMatrix() 
+{
+	return glm::ortho(0.0f, (float)(this->width / this->height) * this->currentCamera->orthoSize, 0.0f, this->currentCamera->orthoSize, this->currentCamera->Znear, this->currentCamera->Zfar);
+}
 bool Window::IsOpened() {
 	return !glfwWindowShouldClose(this->window);
 }

@@ -6,14 +6,14 @@
 
 int main(int argc, char* args[])
 {
-	Window window = Window("test", 400, 400);
-
+	Window window = Window("test", 800, 600);
+	Camera camera = Camera();
 
 	std::vector<Vertex> vertices;
-	Vertex v1 = { 0.5f, 0.5f, 0.0f,			1.0f,0.0f };
-	Vertex v2 = { 0.5f, -0.5f, 0.0f,		1.0f,1.0f};
-	Vertex v3 = { -0.5f, -0.5f, 0.0f,		0.0f,1.0f};
-	Vertex v4 = { -0.5f,  0.5f, 0.0f,		0.0f, 0.0f };
+	Vertex v1 = { 1.0f, 1.0f, 0.0f,			1.0f,0.0f };
+	Vertex v2 = { 1.0f, -1.0f, 0.0f,		1.0f,1.0f};
+	Vertex v3 = { -1.0f, -1.0f, 0.0f,		0.0f,1.0f};
+	Vertex v4 = { -1.0f,  1.0f, 0.0f,		0.0f, 0.0f };
 			
 
 	vertices.push_back(v1);
@@ -25,10 +25,13 @@ int main(int argc, char* args[])
 	std::string vertex = "#version 330 core\n"
 		"layout(location = 0) in vec3 aPos;\n"
 		"layout(location = 1) in vec2 aTexCoord;\n"
+		"uniform mat4 transform;\n"
+		"uniform mat4 view;\n"
+		"uniform mat4 projection;\n"
 		"out vec2 TexCoord;\n"
 		"void main()\n"
 		"{\n"
-		"gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		"gl_Position = projection * view * transform * vec4(aPos, 1.0f);\n"
 		"TexCoord = aTexCoord;\n"
 		"}\n";
 
@@ -38,19 +41,28 @@ int main(int argc, char* args[])
 		"uniform sampler2D ourTexture;\n"
 		"uniform int useTexture;\n"
 		"uniform vec4 ourColor;\n"
+		"uniform vec4 tintColor;\n"
 		"void main()\n"
 		"{\n"
 		"if(useTexture == 0) FragColor = ourColor;\n"
-		"else FragColor = texture(ourTexture, TexCoord);\n"
+		"else FragColor = texture(ourTexture, TexCoord) * tintColor;\n"
 		"}\n";
 
 	Mesh mesh = Mesh(vertex, fragment);
 	mesh.SetVertices(vertices);
 	mesh.Bind();
+	mesh.SetTintColor(BLUE);
+	mesh.position = glm::vec3(3, 1, 0);
+	mesh.rotation = glm::vec3(0, 0, 0);
+	mesh.scale += glm::vec3(1, 0, 0);
 
 	Mesh mesh2 = Mesh(vertex, fragment);
 	mesh2.SetVertices(vertices);
+	mesh2.SetTintColor(RED);
 	mesh2.Bind();
+	mesh2.position = glm::vec3(2.0f, 2.0f,0);
+	mesh2.scale = glm::vec3(1, 2, 1);
+
 
 	Texture tex = Texture("D:/UNITY/3 anno/FastDrawing/FastDrawing/Assets/mario.png");
 
@@ -59,7 +71,7 @@ int main(int argc, char* args[])
 		window.Clear();
 
 		mesh.DrawTexture(&tex);
-		//mesh2.DrawSolidColor(BLUE);
+		mesh2.DrawTexture(&tex);
 
 		glfwPollEvents();
 		window.Blit();

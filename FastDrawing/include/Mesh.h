@@ -3,8 +3,11 @@
 #include <iostream>
 #include "../include/Color.h"
 #include "../include/Texture.h"
+#include "glm/glm/glm.hpp"
+#include "glm/glm/gtc/matrix_transform.hpp"
+#include "glm/glm/gtc/type_ptr.hpp"
+
 #include "glad/glad.h"
-//#include <GLFW/glfw3.h>
 
 
 #define LAYOUT_POSITION 0
@@ -24,17 +27,28 @@ public:
 
 	void SetVertices(std::vector<Vertex> vertices, std::vector<int> indices = std::vector<int>{ 0,1,3,1,2,3});	//default triangle
 	void Bind();
+	void SetTintColor(Color color);
+	void DisableTint();
 
 	//various drawing
 	void DrawSolidColor(Color color);
 	void DrawTexture(Texture* texture);
 	void Draw();
 
+	glm::vec3 position;
+	glm::vec3 rotation;
+	glm::vec3 scale;
+
 
 private:
 
+	glm::mat4 Transform();
+
 	GLuint VBO, VAO, program, indexBuffer;
 	GLint mvpLocation, vPosLocation, vColLocation;
+
+	bool useTint;
+	Color* tintColor;
 
 	std::string vertexShaderText;
 	std::string fragmentShaderText;
