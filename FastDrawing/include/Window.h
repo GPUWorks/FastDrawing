@@ -10,7 +10,7 @@
 class Window
 {
 public:
-	Window(std::string title, int width, int height, int minorOpenGL = 3, int majorOpenGL = 3);
+	Window(const std::string &title, int width, int height, int minorOpenGL = 3, int majorOpenGL = 3);
 	~Window();
 
 	int GetWidth();

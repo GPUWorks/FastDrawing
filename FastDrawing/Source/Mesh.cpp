@@ -133,13 +133,11 @@ void Mesh::DrawTexture(Texture* texture)
 	pivotMat = glm::translate(pivotMat, this->pivot);
 	int pivotLocation = glGetUniformLocation(this->program, "pivot");
 	glUniformMatrix4fv(pivotLocation, 1, GL_FALSE, glm::value_ptr(pivotMat));*/
-	
 
 	(glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, nullptr));	//must be vertex n of elements
-
 }
-void Mesh::Draw() {
 
+void Mesh::Draw() {
 
 	this->shader->Use();
 
@@ -162,7 +160,6 @@ void Mesh::Draw() {
 
 	GL_CALL(glBindVertexArray(this->VAO));
 	GL_CALL(glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() * 5));
-
 }
 
 void Mesh::ApplyUniformTransformation() {

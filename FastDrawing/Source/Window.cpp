@@ -6,7 +6,7 @@
 Window* Window::current = nullptr;
 
 
-Window::Window(std::string title, int width, int height, int minorOpenGL, int majorOpenGL)
+Window::Window(const std::string &title, int width, int height, int minorOpenGL, int majorOpenGL)
 {
 	Window::current = this;
 
