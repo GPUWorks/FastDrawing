@@ -4,9 +4,9 @@
 #include "../include/Color.h"
 #include "../include/Texture.h"
 #include "glm/glm/glm.hpp"
+#include "../include/Shader.h"
 #include "glm/glm/gtc/matrix_transform.hpp"
 #include "glm/glm/gtc/type_ptr.hpp"
-
 #include "glad/glad.h"
 
 
@@ -21,7 +21,7 @@ typedef struct {
 class Mesh
 {
 public:
-	Mesh(std::string vertexShaderText, std::string fragmentShaderText);
+	Mesh(Shader* shader);
 	//Mesh(std::string filePath);
 	~Mesh();
 
@@ -40,20 +40,18 @@ public:
 	glm::vec3 scale;
 	glm::vec3 pivot;
 
+	Shader* shader;
 
 private:
 
 	glm::mat4 Transform();
 	void ApplyUniformTransformation();
 
-	GLuint VBO, VAO, program, indexBuffer;
+	GLuint VBO, VAO, indexBuffer;
 	GLint mvpLocation, vPosLocation, vColLocation;
 
 	bool useTint;
 	Color* tintColor;
-
-	std::string vertexShaderText;
-	std::string fragmentShaderText;
 
 	size_t textureMode, textureWrapping;
 

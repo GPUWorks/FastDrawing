@@ -5,7 +5,7 @@
 class Texture
 {
 public:
-	Texture(std::string filePath);
+	Texture(const std::string &filePath);
 	~Texture();
 
 	int GetWidth() const

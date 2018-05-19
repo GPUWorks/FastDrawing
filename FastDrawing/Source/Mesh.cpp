@@ -6,69 +6,16 @@
 
 
 
-Mesh::Mesh(std::string vertexShaderText, std::string fragmentShaderText)
+Mesh::Mesh(Shader* shader)
 {
 	//initialize scale,pos,rot
 	this->position = glm::vec3(0);
 	this->rotation = glm::vec3(0);
 	this->scale = glm::vec3(1);
 
-
-	this->vertexShaderText = vertexShaderText;
-	this->fragmentShaderText = fragmentShaderText;
-
-
-	//creating vertex shader
-	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-	//assign text to vertex shader
-	const char* vertexText = this->vertexShaderText.c_str();
-	glShaderSource(vertexShaderID, 1, &vertexText, nullptr);
-	//compiling vertex shader
-	glCompileShader(vertexShaderID);
-
-	//check vertex shader compilation
-	GLint isVertexCompiled;
-	glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &isVertexCompiled);
-	if (isVertexCompiled == GL_FALSE)
-	{
-		//compilation failed
-		throw std::exception("Vertex shader compilation failed");
-	}
-
-
-
-	//creating fragment shader
-	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-	//assign text to fragment shader
-	const char* fragmentText = this->fragmentShaderText.c_str();
-	glShaderSource(fragmentShaderID, 1, &fragmentText, nullptr);
-	//compiling fragment shader
-	glCompileShader(fragmentShaderID);
-
-	//check fragment shader compilation
-	GLint isFragmentCompiled;
-	glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &isFragmentCompiled);
-	if (isFragmentCompiled == GL_FALSE)
-	{
-		//compilation failed
-		throw std::exception("Fragment shader compilation failed");
-	}
-
-
-	//create program with shaders
-	this->program = glCreateProgram();
-	glAttachShader(this->program, vertexShaderID);
-	glAttachShader(this->program, fragmentShaderID);
-	glLinkProgram(this->program);
-
-	//free shaders
-	glDeleteShader(vertexShaderID);
-	glDeleteShader(fragmentShaderID);
-
-
-
-
+	this->shader = shader;
 }
+
 void Mesh::SetTintColor(Color color)
 {
 	this->tintColor = new Color(color);
@@ -136,16 +83,17 @@ glm::mat4 Mesh::Transform()
 }
 void Mesh::DrawSolidColor(Color color)
 {
-	glUseProgram(this->program);
+	this->shader->Use();
+
 	//uniforms
 	ApplyUniformTransformation();
 
-	int colorUniformLocation = glGetUniformLocation(this->program, "ourColor");
-	int usetextureUniformLocation = glGetUniformLocation(this->program, "useTexture");
+	int colorUniformLocation = glGetUniformLocation(this->shader->program, "ourColor");
+	int usetextureUniformLocation = glGetUniformLocation(this->shader->program, "useTexture");
 	glUniform1i(usetextureUniformLocation, 0);
 	glUniform4f(colorUniformLocation, color.r, color.g, color.b, color.a);
 
-	int tintUniformLocation = glGetUniformLocation(this->program, "tintColor");
+	int tintUniformLocation = glGetUniformLocation(this->shader->program, "tintColor");
 	if (this->useTint) {
 		glUniform4f(tintUniformLocation, COLOR_SPLIT_PTR(this->tintColor));
 	}
@@ -160,12 +108,13 @@ void Mesh::DrawSolidColor(Color color)
 }
 void Mesh::DrawTexture(Texture* texture)
 {
-	glUseProgram(this->program);
-	int usetextureUniformLocation = glGetUniformLocation(this->program, "useTexture");
+	this->shader->Use();
+
+	int usetextureUniformLocation = glGetUniformLocation(this->shader->program, "useTexture");
 	//int textureUniformLocation = glGetUniformLocation(this->program, "ourTexture");
 	glUniform1i(usetextureUniformLocation, 1);	//use texture
 
-	int tintUniformLocation = glGetUniformLocation(this->program, "tintColor");
+	int tintUniformLocation = glGetUniformLocation(this->shader->program, "tintColor");
 	if (this->useTint) {
 		glUniform4f(tintUniformLocation, COLOR_SPLIT_PTR(this->tintColor));
 	}
@@ -191,15 +140,16 @@ void Mesh::DrawTexture(Texture* texture)
 }
 void Mesh::Draw() {
 
-	glUseProgram(this->program);
+
+	this->shader->Use();
 
 	ApplyUniformTransformation();
 
-	int usetextureUniformLocation = glGetUniformLocation(this->program, "useTexture");
+	int usetextureUniformLocation = glGetUniformLocation(this->shader->program, "useTexture");
 	//int textureUniformLocation = glGetUniformLocation(this->program, "ourTexture");
 	glUniform1i(usetextureUniformLocation, 0);	//do not use texture
 
-	int tintUniformLocation = glGetUniformLocation(this->program, "tintColor");
+	int tintUniformLocation = glGetUniformLocation(this->shader->program, "tintColor");
 	if (this->useTint) {
 		glUniform4f(tintUniformLocation, COLOR_SPLIT_PTR(this->tintColor));
 	}
@@ -207,7 +157,7 @@ void Mesh::Draw() {
 		glUniform4f(tintUniformLocation, 1, 1, 1, 1);
 	}
 
-	int colorUniformLocation = glGetUniformLocation(this->program, "ourColor");
+	int colorUniformLocation = glGetUniformLocation(this->shader->program, "ourColor");
 	glUniform4f(colorUniformLocation, 1, 1, 0, 1);
 
 	GL_CALL(glBindVertexArray(this->VAO));
@@ -218,18 +168,18 @@ void Mesh::Draw() {
 void Mesh::ApplyUniformTransformation() {
 
 	glm::mat4 mat = Transform();
-	int matUniform = glGetUniformLocation(this->program, "transform");
+	int matUniform = glGetUniformLocation(this->shader->program, "transform");
 	glUniformMatrix4fv(matUniform, 1, GL_FALSE, glm::value_ptr(mat));
 
 	//projection
 	glm::mat4 projectionMatrix = glm::mat4(1.0f);
 	projectionMatrix = Window::current->GetProjectionMatrix();
-	int projLocation = glGetUniformLocation(this->program, "projection");
+	int projLocation = glGetUniformLocation(this->shader->program, "projection");
 	glUniformMatrix4fv(projLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
 	glm::mat4 view = glm::mat4(1.0f);
 	// note that we're translating the scene in the reverse direction of where we want to move
 	view = Window::current->currentCamera->GetViewMatrix();
-	int loc = glGetUniformLocation(this->program, "view");
+	int loc = glGetUniformLocation(this->shader->program, "view");
 	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(view));
 }

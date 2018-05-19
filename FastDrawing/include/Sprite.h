@@ -4,7 +4,7 @@
 class Sprite : public Mesh
 {
 public:
-	Sprite(int width, int height) :Mesh("#version 330 core\n"
+	Sprite(int width, int height) :Mesh(new Shader("#version 330 core\n"
 		"layout(location = 0) in vec3 aPos;\n"
 		"layout(location = 1) in vec2 aTexCoord;\n"
 		"uniform mat4 transform;\n"
@@ -29,7 +29,7 @@ public:
 		"{\n"
 		"if(useTexture == 0) FragColor = ourColor;\n"
 		"else FragColor = texture(ourTexture, TexCoord) * tintColor;\n"
-		"}\n"
+		"}\n")
 		)
 	{
 		std::vector<Vertex> vertices;

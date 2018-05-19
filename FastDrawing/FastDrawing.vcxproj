@@ -132,6 +132,7 @@
     <ClInclude Include="include\Mesh.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\Window.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Shaders\Defaults\Default.txt" />
     <ClInclude Include="include\Texture.h" />
     <ClInclude Include="Sprite.h" />

@@ -49,8 +49,9 @@ int main(int argc, char* args[])
 		"if(useTexture == 0) FragColor = ourColor;\n"
 		"else FragColor = texture(ourTexture, TexCoord) * tintColor;\n"
 		"}\n";
+	Shader shader = Shader(vertex, fragment);
 
-	Mesh mesh = Mesh(vertex, fragment);
+	Mesh mesh = Mesh(&shader);
 	mesh.SetVertices(vertices);
 	mesh.Bind();
 	mesh.SetTintColor(BLUE);
@@ -59,7 +60,7 @@ int main(int argc, char* args[])
 	mesh.rotation = glm::vec3(0, 0, 0);
 	mesh.scale += glm::vec3(50, 50, 100);
 
-	Mesh mesh2 = Mesh(vertex, fragment);
+	Mesh mesh2 = Mesh(&shader);
 	mesh2.SetVertices(vertices);
 	mesh2.SetTintColor(RED);
 	mesh2.Bind();
@@ -74,7 +75,8 @@ int main(int argc, char* args[])
 
 		window.Clear();
 
-		sprite.DrawSolidColor(RED);
+		sprite.DrawTexture(&tex);
+		//sprite.DrawSolidColor(RED);
 		//mesh.DrawSolidColor(RED);
 		//mesh.DrawTexture(&tex);
 		//mesh2.DrawTexture(&tex);

@@ -2,7 +2,7 @@
 #include "stb_image.h"
 
 
-Texture::Texture(std::string filePath)
+Texture::Texture(const std::string &filePath)
 {
 	unsigned char* data = stbi_load(filePath.c_str(), &this->width, &this->height, &this->nrChannels, 0);
 	if (data)
